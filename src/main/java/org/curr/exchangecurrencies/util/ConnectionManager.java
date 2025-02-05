@@ -2,6 +2,7 @@ package org.curr.exchangecurrencies.util;
 
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
+import org.curr.exchangecurrencies.dao.CurrencyDao;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -17,6 +18,7 @@ public class ConnectionManager {
     @SneakyThrows
     private void loadDriver() {
         Class.forName("org.sqlite.JDBC");
+
     }
 
     @SneakyThrows
