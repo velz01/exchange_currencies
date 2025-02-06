@@ -1,6 +1,5 @@
 package org.curr.exchangecurrencies.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -8,39 +7,52 @@ import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import org.curr.exchangecurrencies.dao.CurrencyDao;
 import org.curr.exchangecurrencies.dto.CreateCurrencyDto;
+import org.curr.exchangecurrencies.dto.CurrencyDto;
 import org.curr.exchangecurrencies.entity.Currency;
+import org.curr.exchangecurrencies.exception.CodeAlreadyExists;
 import org.curr.exchangecurrencies.exception.CurrencyNotFoundException;
-import org.curr.exchangecurrencies.mapper.CreateCurrencyMapper;
+import org.curr.exchangecurrencies.mapper.CurrencyMapper;
+import org.curr.exchangecurrencies.util.ErrorType;
+import org.curr.exchangecurrencies.util.JsonUtils;
 
+import java.sql.SQLException;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class CurrencyService {
     private static final CurrencyService INSTANCE = new CurrencyService();
     private final CurrencyDao currencyDao = CurrencyDao.getInstance();
-    private final ObjectMapper jsonMapper = new ObjectMapper();
-    private final CreateCurrencyMapper mapper = new CreateCurrencyMapper();
-    @SneakyThrows
-    public String findAll() {
-        return jsonMapper.writeValueAsString(currencyDao.findAll());
+
+
+    private final CurrencyMapper mapper = new CurrencyMapper();
+
+
+    public List<CurrencyDto> findAll() throws SQLException {
+        return currencyDao.findAll().stream().map(mapper::mapFrom).collect(Collectors.toList());
+
     }
 
-    @SneakyThrows
-    public String create(CreateCurrencyDto dto) {
+//    @SneakyThrows
+    public CurrencyDto create(CreateCurrencyDto dto) throws CodeAlreadyExists, SQLException {
         Currency currency = mapper.mapFrom(dto);
         Currency currencyWithId = currencyDao.save(currency);
-        return jsonMapper.writeValueAsString(currencyWithId);
+        return mapper.mapFrom(currencyWithId);
+
 
     }
 
 
-    public String findByCode(String code) throws JsonProcessingException, CurrencyNotFoundException {
+    public CurrencyDto findByCode(String code) throws CurrencyNotFoundException, SQLException {
         Optional<Currency> currencyOptional = currencyDao.findByCode(code);
 
         if (currencyOptional.isPresent()) {
-            return jsonMapper.writeValueAsString(currencyOptional.get());
+            return mapper.mapFrom(currencyOptional.get());
+
         } else {
-            throw new CurrencyNotFoundException("Currency not found for code: " + code);
+            throw new CurrencyNotFoundException();
         }
 
 

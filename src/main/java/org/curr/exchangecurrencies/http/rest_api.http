@@ -1,5 +1,5 @@
 POST http://localhost:8080/currencies
 Content-Type: application/x-www-form-urlencoded
 
-code=AUDSF&full_name=Austraaalian%20dollar&sign=AWS$
+code=AAAWWDAAU&full_name=AuWsAфtra
 

@@ -4,13 +4,13 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import org.curr.exchangecurrencies.entity.Currency;
+import org.curr.exchangecurrencies.exception.CodeAlreadyExists;
+import org.curr.exchangecurrencies.exception.CurrencyNotFoundException;
 import org.curr.exchangecurrencies.util.ConnectionManager;
+import org.curr.exchangecurrencies.util.ErrorType;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
+import java.sql.*;
 
-import java.sql.ResultSet;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -30,8 +30,8 @@ public class CurrencyDao implements Dao<Currency> {
     }
 
     @Override
-    @SneakyThrows
-    public List<Currency> findAll() {
+
+    public List<Currency> findAll() throws SQLException {
         try (Connection connection = ConnectionManager.get()) {
             PreparedStatement preparedStatement = connection.prepareStatement(FIND_ALL);
             ResultSet resultSet = preparedStatement.executeQuery();
@@ -47,8 +47,8 @@ public class CurrencyDao implements Dao<Currency> {
     }
 
     @Override
-    @SneakyThrows
-    public Optional<Currency> findByCode(String code) {
+
+    public Optional<Currency> findByCode(String code) throws SQLException {
         try (Connection connection = ConnectionManager.get();
              PreparedStatement preparedStatement = connection.prepareStatement(FIND_BY_CODE)) {
 
@@ -65,14 +65,17 @@ public class CurrencyDao implements Dao<Currency> {
     }
 
     @Override
-    @SneakyThrows
-    public Currency save(Currency currency) {
+    public Currency save(Currency currency) throws CodeAlreadyExists, SQLException {
         try (Connection connection = ConnectionManager.get();
             PreparedStatement preparedStatement = connection.prepareStatement(CREATE_CURRENCY, Statement.RETURN_GENERATED_KEYS)) {
             preparedStatement.setObject(1, currency.getCode());
             preparedStatement.setObject(2, currency.getFullName());
             preparedStatement.setObject(3, currency.getSign());
-            preparedStatement.executeUpdate();
+            try {
+                preparedStatement.executeUpdate();
+            } catch (SQLException e) {
+                throw new CodeAlreadyExists();
+            }
 
             ResultSet generatedKeys = preparedStatement.getGeneratedKeys();
             generatedKeys.next();

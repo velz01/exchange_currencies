@@ -1,9 +1,11 @@
 package org.curr.exchangecurrencies.validator;
 
-import java.util.Arrays;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
-public class CurrencyValidator implements Validator<String> {
-    private static final CurrencyValidator INSTANCE = new CurrencyValidator();
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public class CodeValidator implements Validator<String> {
+    private static final CodeValidator INSTANCE = new CodeValidator();
     @Override
     public boolean isValid(String code) {
         return (code.toUpperCase().equals(code) && !(containsDigit(code)) && !(code.isEmpty()));
@@ -18,7 +20,7 @@ public class CurrencyValidator implements Validator<String> {
         return false;
     }
 
-    public static CurrencyValidator getInstance() {
+    public static CodeValidator getInstance() {
         return INSTANCE;
     }
 }
