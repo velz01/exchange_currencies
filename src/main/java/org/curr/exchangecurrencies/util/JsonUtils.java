@@ -14,13 +14,10 @@ public class JsonUtils {
 
     public static String getJson(String error) throws JsonProcessingException {
         Map<String, String> message = Map.of(MESSAGE, error);
-
         return jsonMapper.writeValueAsString(message);
     }
 
     public static String getJson(Object dto) throws JsonProcessingException {
-
-
         return jsonMapper.writeValueAsString(dto);
     }
 

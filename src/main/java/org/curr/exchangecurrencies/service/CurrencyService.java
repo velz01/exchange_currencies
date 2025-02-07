@@ -27,7 +27,7 @@ public class CurrencyService {
     private final CurrencyDao currencyDao = CurrencyDao.getInstance();
 
 
-    private final CurrencyMapper mapper = new CurrencyMapper();
+    private final CurrencyMapper mapper = CurrencyMapper.getInstance();
 
 
     public List<CurrencyDto> findAll() throws SQLException {
@@ -47,6 +47,17 @@ public class CurrencyService {
 
     public CurrencyDto findByCode(String code) throws CurrencyNotFoundException, SQLException {
         Optional<Currency> currencyOptional = currencyDao.findByCode(code);
+
+        if (currencyOptional.isPresent()) {
+            return mapper.mapFrom(currencyOptional.get());
+
+        } else {
+            throw new CurrencyNotFoundException();
+        }
+    }
+
+    public CurrencyDto findById(Integer id) throws CurrencyNotFoundException, SQLException {
+        Optional<Currency> currencyOptional = currencyDao.findById(id);
 
         if (currencyOptional.isPresent()) {
             return mapper.mapFrom(currencyOptional.get());

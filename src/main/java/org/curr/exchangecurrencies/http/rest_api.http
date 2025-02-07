@@ -1,5 +1,6 @@
-POST http://localhost:8080/currencies
-Content-Type: application/x-www-form-urlencoded
+#POST http://localhost:8080/currencies
+#Content-Type: application/x-www-form-urlencoded
+#
+#code=AAAWWDAAU&full_name=AuWsAфtra
 
-code=AAAWWDAAU&full_name=AuWsAфtra
-
+GET http://localhost:8080/exchangeRates
