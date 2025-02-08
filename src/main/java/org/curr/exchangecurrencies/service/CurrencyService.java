@@ -51,9 +51,9 @@ public class CurrencyService {
         if (currencyOptional.isPresent()) {
             return mapper.mapFrom(currencyOptional.get());
 
-        } else {
-            throw new CurrencyNotFoundException();
         }
+            throw new CurrencyNotFoundException();//
+
     }
 
     public CurrencyDto findById(Integer id) throws CurrencyNotFoundException, SQLException {

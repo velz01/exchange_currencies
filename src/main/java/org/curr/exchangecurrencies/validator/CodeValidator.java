@@ -8,7 +8,7 @@ public class CodeValidator implements Validator<String> {
     private static final CodeValidator INSTANCE = new CodeValidator();
     @Override
     public boolean isValid(String code) {
-        return (code.toUpperCase().equals(code) && !(containsDigit(code)) && !(code.isEmpty()));
+        return (code.toUpperCase().equals(code) && !(containsDigit(code)) && code.length() == 3);
     }
 
     private boolean containsDigit(String code) {

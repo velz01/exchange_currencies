@@ -3,4 +3,4 @@
 #
 #code=AAAWWDAAU&full_name=AuWsAфtra
 
-GET http://localhost:8080/exchangeRates
+GET http://localhost:8080/exchangeRate/USDEUR

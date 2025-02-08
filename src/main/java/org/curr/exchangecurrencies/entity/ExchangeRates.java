@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ExchangeCurrency {
+public class ExchangeRates {
     Integer id;
     Integer baseCurrencyId;
     Integer targetCurrencyId;
