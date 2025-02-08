@@ -3,10 +3,13 @@ package org.curr.exchangecurrencies.service;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.curr.exchangecurrencies.dao.ExchangeRatesDao;
+import org.curr.exchangecurrencies.dto.CreateExchangeDto;
 import org.curr.exchangecurrencies.dto.CurrencyDto;
 import org.curr.exchangecurrencies.dto.ExchangeRatesDto;
 import org.curr.exchangecurrencies.entity.ExchangeRates;
+import org.curr.exchangecurrencies.exception.CodeAlreadyExists;
 import org.curr.exchangecurrencies.exception.CurrencyNotFoundException;
+import org.curr.exchangecurrencies.exception.ExchangeRatesAlreadyExists;
 import org.curr.exchangecurrencies.exception.ExchangeRatesNotFound;
 import org.curr.exchangecurrencies.mapper.ExchangeRatesMapper;
 
@@ -54,6 +57,30 @@ public class ExchangeRatesService {
         }
         throw new ExchangeRatesNotFound();
 
+
+    }
+
+    public ExchangeRatesDto save(CreateExchangeDto dto) throws SQLException, CurrencyNotFoundException, ExchangeRatesAlreadyExists {
+        CurrencyDto baseCurrencyDto = currencyService.findByCode(dto.getBaseCurrency());
+        CurrencyDto targetCurrencyDto = currencyService.findByCode(dto.getTargetCurrency());
+
+        ExchangeRates exchangeRates = mapper.mapFrom(dto, baseCurrencyDto.getId(), targetCurrencyDto.getId());
+        ExchangeRates exchangeRatesWithId = exchangeRatesDao.save(exchangeRates);
+        return mapper.mapFrom(exchangeRatesWithId, baseCurrencyDto, targetCurrencyDto);
+    }
+
+    public ExchangeRatesDto update(CreateExchangeDto dto) throws SQLException, CurrencyNotFoundException, ExchangeRatesNotFound {
+        CurrencyDto baseCurrencyDto = currencyService.findByCode(dto.getBaseCurrency());
+        CurrencyDto targetCurrencyDto = currencyService.findByCode(dto.getTargetCurrency());
+
+        ExchangeRates updatedExchangeRates = mapper.mapFrom(dto, baseCurrencyDto.getId(), targetCurrencyDto.getId());
+        Optional<ExchangeRates> exchangeRates = exchangeRatesDao.findById(baseCurrencyDto.getId(), targetCurrencyDto.getId());
+        if (exchangeRates.isPresent()) {
+            updatedExchangeRates.setId(exchangeRates.get().getId());
+            exchangeRatesDao.update(updatedExchangeRates);
+            return mapper.mapFrom(updatedExchangeRates, baseCurrencyDto, targetCurrencyDto);
+        }
+        throw new ExchangeRatesNotFound();
 
     }
 }

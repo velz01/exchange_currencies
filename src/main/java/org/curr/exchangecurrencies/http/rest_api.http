@@ -1,6 +1,9 @@
+PATCH http://localhost:8080/exchangeRate/USDEUR
+Content-Type: application/x-www-form-urlencoded
+
+rate=1.2
+
 #POST http://localhost:8080/currencies
 #Content-Type: application/x-www-form-urlencoded
 #
-#code=AAAWWDAAU&full_name=AuWsAфtra
-
-GET http://localhost:8080/exchangeRate/USDEUR
+#name=EUROO&code=EUS
