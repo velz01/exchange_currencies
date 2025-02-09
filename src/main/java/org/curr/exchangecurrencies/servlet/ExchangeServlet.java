@@ -5,20 +5,31 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.SneakyThrows;
+import org.curr.exchangecurrencies.dto.ExchangeDto;
 import org.curr.exchangecurrencies.dto.ForExchangeDto;
 import org.curr.exchangecurrencies.dto.ExchangeRatesDto;
+import org.curr.exchangecurrencies.exception.CurrencyNotFoundException;
+import org.curr.exchangecurrencies.exception.ExchangeRatesNotFound;
 import org.curr.exchangecurrencies.service.ExchangeRatesService;
+import org.curr.exchangecurrencies.util.JsonUtils;
 
 import java.io.IOException;
+import java.sql.SQLException;
 
 @WebServlet("/exchange")
 public class ExchangeServlet extends HttpServlet {
     ExchangeRatesService exchangeRatesService = ExchangeRatesService.getInstance();
 
+    @SneakyThrows
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         ForExchangeDto forExchangeDto = buildExchangeDto(req);
-        ExchangeRatesDto exchangeRatesDto = exchangeRatesService.obtainExchange(forExchangeDto);
+
+        ExchangeDto exchangeRatesDto = exchangeRatesService.obtainExchange(forExchangeDto);
+        String json = JsonUtils.getJson(exchangeRatesDto);
+        resp.getWriter().write(json);
+
     }
 
     private static ForExchangeDto buildExchangeDto(HttpServletRequest req) {
