@@ -18,8 +18,8 @@ public class ExchangeRatesDao implements Dao<ExchangeRates> {
     private static final ExchangeRatesDao INSTANCE = new ExchangeRatesDao();
     private static final String FIND_ALL = "SELECT * FROM exchange_rates";
     private static final String FIND_BY_IDS= "SELECT * FROM exchange_rates WHERE base_currency_id = ? AND target_currency_id = ?";
-    private static final String CREATE_EXCHANGE = "INSERT INTO exchange_rates (base_currency_id, target_currency_id, rate) VALUES (?,?,?)";
-    private static final String UPDATE_EXCHANGE = "UPDATE exchange_rates SET rate = ? WHERE id = ?";
+    private static final String CREATE_EXCHANGE = "INSERT INTO exchange_rates (base_currency_id, target_currency_id, rate) VALUES (?,?,round(?,6))";
+    private static final String UPDATE_EXCHANGE = "UPDATE exchange_rates SET  rate = round(?,6) WHERE id = ?";
     @Override
     public List<ExchangeRates> findAll() throws SQLException {
         try (Connection connection = ConnectionManager.get();

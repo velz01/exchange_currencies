@@ -15,19 +15,22 @@ import org.curr.exchangecurrencies.service.ExchangeRatesService;
 import org.curr.exchangecurrencies.util.JsonUtils;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 
 @WebServlet("/exchange")
 public class ExchangeServlet extends HttpServlet {
     ExchangeRatesService exchangeRatesService = ExchangeRatesService.getInstance();
 
-    @SneakyThrows
     @Override
+    @SneakyThrows
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        resp.setContentType("application/json");
+        resp.setCharacterEncoding(StandardCharsets.UTF_8.name());
         ForExchangeDto forExchangeDto = buildExchangeDto(req);
 
-        ExchangeDto exchangeRatesDto = exchangeRatesService.obtainExchange(forExchangeDto);
-        String json = JsonUtils.getJson(exchangeRatesDto);
+        ExchangeDto exchangeDto = exchangeRatesService.obtainExchange(forExchangeDto);
+        String json = JsonUtils.getJson(exchangeDto);
         resp.getWriter().write(json);
 
     }

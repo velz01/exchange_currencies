@@ -23,6 +23,6 @@ public class ConnectionManager {
 
     @SneakyThrows
     public Connection get() {
-        return DriverManager.getConnection(URL_KEY_LAPTOP);
+        return DriverManager.getConnection(URL_KEY_PC);
     }
 }

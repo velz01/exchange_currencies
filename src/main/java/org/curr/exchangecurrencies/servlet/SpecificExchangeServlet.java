@@ -113,6 +113,8 @@ public class SpecificExchangeServlet extends HttpServlet {
         float rate;
         if (Objects.equals(split[0], "rate")) {
             rate = Float.parseFloat(split[1]);
+//            System.out.println(Long.parseLong(split[1]));
+//            System.out.println(rate);
         }
         else {
             rate = (float) -1;

@@ -16,6 +16,7 @@ import org.curr.exchangecurrencies.validator.CreateCurrencyDtoValidator;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
+import java.util.Enumeration;
 
 @WebServlet("/currencies")
 public class CurrencyServlet extends HttpServlet {
@@ -40,7 +41,9 @@ public class CurrencyServlet extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         resp.setContentType("application/json");
         resp.setCharacterEncoding(StandardCharsets.UTF_8.name());
+
         String json;
+
         CreateCurrencyDto createCurrencyDto = buildCurrencyDto(req);
         if (dtoValidator.isValid(createCurrencyDto)) {
             try {
@@ -70,7 +73,7 @@ public class CurrencyServlet extends HttpServlet {
     private static CreateCurrencyDto buildCurrencyDto(HttpServletRequest req) {
         return CreateCurrencyDto.builder()
                 .code(req.getParameter("code"))
-                .fullName(req.getParameter("full_name"))
+                .fullName(req.getParameter("name"))
                 .sign(req.getParameter("sign"))
                 .build();
     }

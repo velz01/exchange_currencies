@@ -2,8 +2,10 @@ package org.curr.exchangecurrencies.service;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.curr.exchangecurrencies.dao.CurrencyDao;
 import org.curr.exchangecurrencies.dao.ExchangeRatesDao;
 import org.curr.exchangecurrencies.dto.*;
+import org.curr.exchangecurrencies.entity.Currency;
 import org.curr.exchangecurrencies.entity.ExchangeRates;
 import org.curr.exchangecurrencies.exception.CurrencyNotFoundException;
 import org.curr.exchangecurrencies.exception.ExchangeRatesAlreadyExists;
@@ -19,9 +21,10 @@ import java.util.Optional;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ExchangeRatesService {
     private static final ExchangeRatesService INSTANCE = new ExchangeRatesService();
-
+    private static final String FOR_CROSS_COURSE = "USD";
     private final ExchangeRatesMapper mapper = ExchangeRatesMapper.getInstance();
     private final ExchangeRatesDao exchangeRatesDao = ExchangeRatesDao.getInstance();
+    private final CurrencyDao currencyDao = CurrencyDao.getInstance();
     private final CurrencyService currencyService = CurrencyService.getInstance();
 
     public List<ExchangeRatesDto> findAll() throws SQLException, CurrencyNotFoundException {
@@ -78,15 +81,35 @@ public class ExchangeRatesService {
         Optional<ExchangeRates> optionalExchangeRates2 = exchangeRatesDao.findById(targetCurrencyDto.getId(),baseCurrencyDto.getId());
         if (optionalExchangeRates2.isPresent()) {
             ExchangeRates exchangeRates = optionalExchangeRates2.get();
+
             return ExchangeDto.builder()
                     .baseCurrencyDto(baseCurrencyDto)
                     .targetCurrencyDto(targetCurrencyDto)
                     .rate(exchangeRates.getRate())
                     .amount(forExchangeDto.getAmount())
-                    .convertedAmount(forExchangeDto.getAmount() / exchangeRates.getRate() )
+                    .convertedAmount((1/ exchangeRates.getRate()) * forExchangeDto.getAmount() )
                     .build();
         }
-    throw new ExchangeRatesNotFound();
+        Optional<Currency> currencyOptional = currencyDao.findByCode(FOR_CROSS_COURSE);
+        if (currencyOptional.isPresent()) {
+            Currency currencyUsd = currencyOptional.get();
+            Optional<ExchangeRates> baseExchangeRatesOptional = exchangeRatesDao.findById(baseCurrencyDto.getId(), currencyUsd.getId());
+            Optional<ExchangeRates> targetExchangeRatesOptional = exchangeRatesDao.findById(targetCurrencyDto.getId(), currencyUsd.getId());
+            if (baseExchangeRatesOptional.isPresent() && targetExchangeRatesOptional.isPresent()) {
+                ExchangeRates baseExchangeRates = baseExchangeRatesOptional.get();
+                ExchangeRates targetExchangeRates = targetExchangeRatesOptional.get();
+                Float rate = baseExchangeRates.getRate() / targetExchangeRates.getRate();
+                return ExchangeDto.builder()
+                        .baseCurrencyDto(baseCurrencyDto)
+                        .targetCurrencyDto(targetCurrencyDto)
+                        .rate(rate)
+                        .amount(forExchangeDto.getAmount())
+                        .convertedAmount(rate * forExchangeDto.getAmount())
+                        .build();
+
+            }
+        }
+        throw new ExchangeRatesNotFound();
     }
     public ExchangeRatesDto save(CreateExchangeDto dto) throws SQLException, CurrencyNotFoundException, ExchangeRatesAlreadyExists {
         CurrencyDto baseCurrencyDto = currencyService.findByCode(dto.getBaseCurrency());
