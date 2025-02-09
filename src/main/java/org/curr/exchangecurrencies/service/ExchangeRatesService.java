@@ -5,9 +5,9 @@ import lombok.NoArgsConstructor;
 import org.curr.exchangecurrencies.dao.ExchangeRatesDao;
 import org.curr.exchangecurrencies.dto.CreateExchangeDto;
 import org.curr.exchangecurrencies.dto.CurrencyDto;
+import org.curr.exchangecurrencies.dto.ForExchangeDto;
 import org.curr.exchangecurrencies.dto.ExchangeRatesDto;
 import org.curr.exchangecurrencies.entity.ExchangeRates;
-import org.curr.exchangecurrencies.exception.CodeAlreadyExists;
 import org.curr.exchangecurrencies.exception.CurrencyNotFoundException;
 import org.curr.exchangecurrencies.exception.ExchangeRatesAlreadyExists;
 import org.curr.exchangecurrencies.exception.ExchangeRatesNotFound;
@@ -59,7 +59,25 @@ public class ExchangeRatesService {
 
 
     }
+    public ExchangeRatesDto obtainExchange(ForExchangeDto forExchangeDto) throws SQLException, CurrencyNotFoundException, ExchangeRatesNotFound {
+        String baseCode = forExchangeDto.getBaseCurrency();
+        String targetCode= forExchangeDto.getTargetCurrency();
 
+
+        CurrencyDto baseCurrencyDto = currencyService.findByCode(baseCode);//
+        CurrencyDto targetCurrencyDto = currencyService.findByCode(targetCode);
+        Optional<ExchangeRates> optionalExchangeRates = exchangeRatesDao.findById(baseCurrencyDto.getId(), targetCurrencyDto.getId());
+        if (optionalExchangeRates.isPresent()) {
+            ExchangeRates exchangeRates = optionalExchangeRates.get();
+            return mapper.mapFrom(exchangeRates, baseCurrencyDto, targetCurrencyDto);
+        }
+        Optional<ExchangeRates> optionalExchangeRates2 = exchangeRatesDao.findById(targetCurrencyDto.getId(),baseCurrencyDto.getId());
+        if (optionalExchangeRates2.isPresent()) {
+            ExchangeRates exchangeRates = optionalExchangeRates2.get();
+            return mapper.mapFrom(exchangeRates, baseCurrencyDto, targetCurrencyDto);
+        }
+
+    }
     public ExchangeRatesDto save(CreateExchangeDto dto) throws SQLException, CurrencyNotFoundException, ExchangeRatesAlreadyExists {
         CurrencyDto baseCurrencyDto = currencyService.findByCode(dto.getBaseCurrency());
         CurrencyDto targetCurrencyDto = currencyService.findByCode(dto.getTargetCurrency());
