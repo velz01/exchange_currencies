@@ -29,8 +29,7 @@ public class SpecificCurrencyServlet extends HttpServlet {
     @Override
 
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        resp.setContentType("application/json");
-        resp.setCharacterEncoding(StandardCharsets.UTF_8.name());
+
         String code = req.getRequestURI().replace("/currency/", "");
         String json;
         if (codeValidator.isValid(code)) {

@@ -26,8 +26,7 @@ public class ExchangeRatesServlet extends HttpServlet {
     private final CreateExchangeRatesValidator validator = CreateExchangeRatesValidator.getInstance();
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        resp.setContentType("application/json");
-        resp.setCharacterEncoding(StandardCharsets.UTF_8.name());
+
         String json;
         try {
             List<ExchangeRatesDto> exchangeRatesDtos = exchangeRatesService.findAll();
@@ -42,8 +41,7 @@ public class ExchangeRatesServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        resp.setContentType("application/json");
-        resp.setCharacterEncoding(StandardCharsets.UTF_8.name());
+
 
         String json;
         CreateExchangeDto dto = buildCreateExchangeDto(req);

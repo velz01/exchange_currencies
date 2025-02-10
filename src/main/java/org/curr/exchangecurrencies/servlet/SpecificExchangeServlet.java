@@ -25,25 +25,22 @@ import java.util.stream.Collectors;
 
 @WebServlet("/exchangeRate/*")
 public class SpecificExchangeServlet extends HttpServlet {
-   private final ExchangeCodeValidator exchangeCodeValidator = ExchangeCodeValidator.getInstance();
-   private final CreateExchangeRatesValidator createExchangeRatesValidator = CreateExchangeRatesValidator.getInstance();
-   private final ExchangeRatesService ratesService = ExchangeRatesService.getInstance();
+    private final ExchangeCodeValidator exchangeCodeValidator = ExchangeCodeValidator.getInstance();
+    private final CreateExchangeRatesValidator createExchangeRatesValidator = CreateExchangeRatesValidator.getInstance();
+    private final ExchangeRatesService ratesService = ExchangeRatesService.getInstance();
 
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         System.out.println(req.getParameter("rate"));
         if ("PATCH".equalsIgnoreCase(req.getMethod())) {
-            doPatch(req,resp);
-        }
-        else {
+            doPatch(req, resp);
+        } else {
             super.service(req, resp);
         }
     }
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        resp.setContentType("application/json");
-        resp.setCharacterEncoding(StandardCharsets.UTF_8.name());
 
         String codes = req.getRequestURI().replace("/exchangeRate/", "");
 
@@ -61,8 +58,7 @@ public class SpecificExchangeServlet extends HttpServlet {
                 String json = JsonUtils.getJson(ErrorType.CURRENCY_NOT_FOUND);
                 resp.getWriter().write(json);
             }
-        }
-        else {
+        } else {
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             String json = JsonUtils.getJson(ErrorType.CODE_NOT_FOUND);
             resp.getWriter().write(json);
@@ -71,10 +67,7 @@ public class SpecificExchangeServlet extends HttpServlet {
 
 
     protected void doPatch(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        resp.setContentType("application/json");
 
-
-        resp.setCharacterEncoding(StandardCharsets.UTF_8.name());
         resp.setStatus(HttpServletResponse.SC_OK);
 
         String codes = req.getRequestURI().replace("/exchangeRate/", "");
@@ -86,8 +79,7 @@ public class SpecificExchangeServlet extends HttpServlet {
                     ExchangeRatesDto exchangeRatesDto = ratesService.update(dto);
                     String json = JsonUtils.getJson(exchangeRatesDto);
                     resp.getWriter().write(json);
-                }
-                else {
+                } else {
                     resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                     String json = JsonUtils.getJson(ErrorType.FIELD_NOT_AVAILABLE);
                     resp.getWriter().write(json);
@@ -101,13 +93,13 @@ public class SpecificExchangeServlet extends HttpServlet {
                 String json = JsonUtils.getJson(ErrorType.CURRENCY_NOT_FOUND);
                 resp.getWriter().write(json);
             }
-        }
-        else {
+        } else {
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             String json = JsonUtils.getJson(ErrorType.CODE_NOT_FOUND);
             resp.getWriter().write(json);
         }
     }
+
     private static Float getRate(HttpServletRequest req) throws IOException {
         String[] split = req.getReader().lines().collect(Collectors.joining()).split("=");
         float rate;
@@ -115,16 +107,16 @@ public class SpecificExchangeServlet extends HttpServlet {
             rate = Float.parseFloat(split[1]);
 //            System.out.println(Long.parseLong(split[1]));
 //            System.out.println(rate);
-        }
-        else {
+        } else {
             rate = (float) -1;
         }
         return rate;
     }
+
     private static CreateExchangeDto buildCreateExchangeDto(HttpServletRequest req, String codes) throws IOException {
 
-        String baseCode = codes.substring(0,3);
-        String targetCode = codes.substring(3,6);
+        String baseCode = codes.substring(0, 3);
+        String targetCode = codes.substring(3, 6);
         return CreateExchangeDto.builder()
                 .baseCurrency(baseCode)
                 .targetCurrency(targetCode)

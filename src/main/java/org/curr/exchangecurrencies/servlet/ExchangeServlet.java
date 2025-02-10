@@ -25,8 +25,7 @@ public class ExchangeServlet extends HttpServlet {
     @Override
     @SneakyThrows
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        resp.setContentType("application/json");
-        resp.setCharacterEncoding(StandardCharsets.UTF_8.name());
+
         ForExchangeDto forExchangeDto = buildExchangeDto(req);
 
         ExchangeDto exchangeDto = exchangeRatesService.obtainExchange(forExchangeDto);
